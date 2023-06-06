@@ -4,7 +4,7 @@ import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import Spinner from "react-bootstrap/Spinner";
 const Users = () => {
-  const [url, setUrl] = useState("http://127.0.0.1:8000/viewsapp/reporter/");
+  const [url, setUrl] = useState("https://django-restful-api-production.up.railway.app/viewsapp/reporter/");
   const [count, setCount] = useState(0);
   const [next, setNext] = useState(null);
   const [prev, setPrev] = useState(null);
@@ -53,7 +53,7 @@ const Users = () => {
       try {
         console.log("updating");
         const response = await axios.put(
-          `http://127.0.0.1:8000/viewsapp/reporter/${updateId}`,
+          `https://django-restful-api-production.up.railway.app/viewsapp/reporter/${updateId}`,
           newUser
         );
         console.log("User Updated:", response.data);
@@ -71,7 +71,7 @@ const Users = () => {
     } else {
       try {
         const response = await axios.post(
-          "http://127.0.0.1:8000/viewsapp/reporter/",
+          "https://django-restful-api-production.up.railway.app/viewsapp/reporter/",
           newUser
         );
         console.log("User added:", response.data);
@@ -119,7 +119,7 @@ const Users = () => {
     const userId = event.target.id;
     try {
       const response = await axios.delete(
-        `http://127.0.0.1:8000/viewsapp/reporter/${userId}`
+        `https://django-restful-api-production.up.railway.app/viewsapp/reporter/${userId}`
       );
       console.log("User deleted");
       fetchData(url);
