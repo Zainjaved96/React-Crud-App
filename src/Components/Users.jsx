@@ -2,12 +2,12 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
-import Spinner from 'react-bootstrap/Spinner';
+import Spinner from "react-bootstrap/Spinner";
 const Users = () => {
-  const [url, setUrl] = useState('http://127.0.0.1:8000/viewsapp/reporter/')
-  const [count, setCount] = useState(0)
-  const [next , setNext] = useState(null)
-  const [prev , setPrev] = useState(null)
+  const [url, setUrl] = useState("http://127.0.0.1:8000/viewsapp/reporter/");
+  const [count, setCount] = useState(0);
+  const [next, setNext] = useState(null);
+  const [prev, setPrev] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [updateId, setUpdateId] = useState(false);
@@ -18,16 +18,13 @@ const Users = () => {
 
   const fetchData = async (url) => {
     try {
-      const response = await axios.get(
-        url
-      );
-
+      const response = await axios.get(url);
 
       setUsers(response.data.results.reverse());
-      setCount(response.data.count)
-      setNext(response.data.next)
-      setPrev(response.data.previous)
-      console.log(count,next,prev)
+      setCount(response.data.count);
+      setNext(response.data.next);
+      setPrev(response.data.previous);
+      console.log(count, next, prev);
       setIsLoading(false);
       console.log(users);
     } catch (error) {
@@ -47,50 +44,57 @@ const Users = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const newUser = {
-        first_name: firstName,
-        last_name: lastName,
-        email: email,
-      };
-  
-    if (updating){
-        try {
-            console.log('updating')
-            const response = await axios.put(
-              `http://127.0.0.1:8000/viewsapp/reporter/${updateId}`,
-              newUser
-            );
-            console.log("User Updated:", response.data);
-            fetchData(url);
-            // Reset the form after successful submission
-            setFirstName("");
-            setLastName("");
-            setEmail("");
-            setUpdating(false)
-          } catch (error) {
-            console.error("Error adding user:", error);
-            alert("BAD REQUEST");
-          }
-    }
-    else {
-        try {
-          const response = await axios.post(
-            "http://127.0.0.1:8000/viewsapp/reporter/",
-            newUser
-          );
-          console.log("User added:", response.data);
-          fetchData(url);
-          // Reset the form after successful submission
-          setFirstName("");
-          setLastName("");
-          setEmail("");
-        } catch (error) {
-          console.error("Error adding user:", error);
-          alert("BAD REQUEST");
-        }
-    }
+      first_name: firstName,
+      last_name: lastName,
+      email: email,
+    };
 
+    if (updating) {
+      try {
+        console.log("updating");
+        const response = await axios.put(
+          `http://127.0.0.1:8000/viewsapp/reporter/${updateId}`,
+          newUser
+        );
+        console.log("User Updated:", response.data);
+        fetchData(url);
+        // Reset the form after successful submission
+        setFirstName("");
+        setLastName("");
+        setEmail("");
+        setUpdating(false);
+        showNoti("updateNotification");
+      } catch (error) {
+        console.error("Error adding user:", error);
+        alert("BAD REQUEST");
+      }
+    } else {
+      try {
+        const response = await axios.post(
+          "http://127.0.0.1:8000/viewsapp/reporter/",
+          newUser
+        );
+        console.log("User added:", response.data);
+        fetchData(url);
+        // Reset the form after successful submission
+        setFirstName("");
+        setLastName("");
+        setEmail("");
+        showNoti("successNotification");
+      } catch (error) {
+        console.error("Error adding user:", error);
+        alert("BAD REQUEST");
+      }
+    }
   };
 
+  function showNoti(id) {
+    const noti = document.getElementById(id);
+    noti.classList.remove("d-none");
+    setTimeout(function () {
+      noti.classList.add("d-none");
+    }, 2000);
+  }
   const handleEdit = async (event) => {
     // Fetching data to store in the form
     const userId = event.target.id;
@@ -109,34 +113,6 @@ const Users = () => {
     setEmail(email);
     setUpdating(true);
     setUpdateId(userId);
-   
-  };
-
-  const handleUpdate = async (event) => {
-    event.preventDefault();
-
-    const newUser = {
-      first_name: firstName,
-      last_name: lastName,
-      email: email,
-    };
-
-    try {
-      const response = await axios.put(
-        `http://127.0.0.1:8000/viewsapp/reporter/${updateId}`,
-        newUser
-      );
-      console.log("User Updated:", response.data);
-      fetchData(url);
-      setUpdating(false);
-      setFirstName("");
-      setLastName("");
-      setEmail("");
-    } catch (error) {
-      console.error("Error adding user:", error);
-      alert("BAD REQUEST");
-    }
-    return;
   };
 
   const handleDelete = async (event) => {
@@ -147,34 +123,32 @@ const Users = () => {
       );
       console.log("User deleted");
       fetchData(url);
+      showNoti("deleteNotification");
       // Reset the form after successful submission
     } catch (error) {
       console.error("Error adding user:", error);
     }
   };
-  const handleNext = ()=>{
-
-    if(next){
-        setUrl(next)
-        fetchData(next)
+  const handleNext = () => {
+    if (next) {
+      setUrl(next);
+      fetchData(next);
     }
-  }
-  const handlePrev = ()=>{
-    if(prev){
-        setUrl(prev)
-        fetchData(prev)
+  };
+  const handlePrev = () => {
+    if (prev) {
+      setUrl(prev);
+      fetchData(prev);
     }
-  }
+  };
   if (isLoading) {
     return (
-        <div className="text-center my-5">
-            <Spinner animation="border" role="status">
-            <span className="visually-hidden">Loading...</span>
-            </Spinner>
-    </div>
-    )
-    
-
+      <div className="text-center my-5">
+        <Spinner animation="border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </Spinner>
+      </div>
+    );
   }
 
   return (
@@ -182,7 +156,7 @@ const Users = () => {
       {" "}
       {/* Form */}
       <Form className="col-lg-8 mx-auto" onSubmit={handleSubmit}>
-        <h1 className="text-center">User Form</h1>
+        <h1 className="text-center my-2">User Form</h1>
         <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
           <Form.Label>First Name</Form.Label>
           <Form.Control
@@ -209,18 +183,15 @@ const Users = () => {
             type="email"
             value={email}
             onChange={(e) => {
-                setEmail(e.target.value)
-                console.log(email)
-                }}
+              setEmail(e.target.value);
+              console.log(email);
+            }}
             required
             placeholder="name@example.com"
           />
         </Form.Group>
         {updating ? (
-          <button 
-           type="submit"
-            className="btn btn-lg btn-primary"
-          >
+          <button type="submit" className="btn btn-lg btn-primary">
             Update
           </button>
         ) : (
@@ -229,6 +200,49 @@ const Users = () => {
           </button>
         )}
       </Form>
+      {/* Notifications */}
+      <div
+        id="successNotification"
+        class="alert  text-white bg-success w-25  d-none "
+        role="alert"
+        style={{
+          zIndex: 1,
+          position: "fixed",
+          right: "10px",
+          top: "10px",
+        }}
+      >
+        Item Added successfully!
+      </div>
+      <div
+        id="deleteNotification"
+        class="alert bg-danger text-white w-25  d-none "
+        role="alert"
+        style={{
+          zIndex: 1,
+          position: "fixed",
+          right: "10px",
+          top: "10px",
+        }}
+      >
+        Item Deleted successfully!
+      </div>
+      <div
+        id="updateNotification"
+        class="alert bg-primary text-white w-25  d-none "
+        role="alert"
+        style={{
+          zIndex: 1,
+          position: "fixed",
+          right: "10px",
+          top: "10px",
+        }}
+      >
+        Item Updated successfully!
+      </div>
+       {/* Notifications end */}
+
+       {/* Reset */}
       <div className="text-center my-3">
         <button
           onClick={handleReset}
@@ -238,18 +252,35 @@ const Users = () => {
           Reset Vales
         </button>
       </div>
+
+     
+
       {/* User Cards */}
       <h1 className="text-center py-2">Reporter List</h1>
       <h4 className="text-center py-2">Total Entries: {count}</h4>
       <h5 className="text-center py-2">On this Page: {users.length}</h5>
       <div className="d-flex text-center col-lg-7 container flex-row-reverse justify-content-between">
-          <a className={`btn btn-md ${!next ?  'disabled': "d-block"} btn-primary mx-2`} onClick={handleNext}>Next</a>
-          <a className={`btn btn-md ${!prev ?  'disabled': "d-block"} btn-primary mx-2`} onClick={handlePrev}>Previous</a>
+        <a
+          className={`btn btn-md ${
+            !next ? "disabled" : "d-block"
+          } btn-primary mx-2`}
+          onClick={handleNext}
+        >
+          Next
+        </a>
+        <a
+          className={`btn btn-md ${
+            !prev ? "disabled" : "d-block"
+          } btn-primary mx-2`}
+          onClick={handlePrev}
+        >
+          Previous
+        </a>
       </div>
       <ul className="d-block mx-auto col-lg-8">
         {users.map((user) => (
           <Card key={user.id} className="shadow my-3">
-            <Card.Body >
+            <Card.Body>
               <Card.Title className="first-name">{user.first_name}</Card.Title>
               <Card.Subtitle className="mb-2 text-muted last-name">
                 {user.last_name}{" "}
@@ -271,9 +302,8 @@ const Users = () => {
               </Card.Link>
             </Card.Body>
           </Card>
-        ))} 
+        ))}
       </ul>
-
     </div>
   );
 };
